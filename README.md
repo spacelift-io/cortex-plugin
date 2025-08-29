@@ -2,6 +2,8 @@
 
 A comprehensive Cortex plugin that integrates with Spacelift to provide infrastructure deployment insights directly within your Cortex service catalog.
 
+![cortex.png](cortex.png)
+
 ## Features
 
 - **Multi-Stack Dashboard**: Automatically discovers and displays all accessible Spacelift stacks
