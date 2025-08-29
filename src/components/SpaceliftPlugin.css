@@ -1,0 +1,284 @@
+.spacelift-plugin {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.plugin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stack-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stack-description {
+  color: #6b7280;
+  margin: 0 16px 16px 16px;
+  line-height: 1.5;
+}
+
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.metrics-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.metric-value.success {
+  color: #059669;
+}
+
+.badges-section, .labels-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px;
+}
+
+.actions-section {
+  display: flex;
+  gap: 12px;
+  margin: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Stacks Grid */
+.stacks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stack-card {
+  padding: 16px;
+}
+
+.stack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stack-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stack-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  font-size: 12px;
+}
+
+.stack-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+.detail-label::after {
+  content: ':';
+}
+
+.detail-value {
+  font-size: 12px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.stack-metrics {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+.stack-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.metric-number {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.metric-number.success {
+  color: #059669;
+}
+
+.stack-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.status-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.stack-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.stack-actions button {
+  flex: 1;
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+/* Stack Configuration Badges */
+.stack-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+/* Stack Labels */
+.stack-labels {
+  margin-bottom: 12px;
+}
+
+.labels-title {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.labels-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .plugin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .info-section, .metrics-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .actions-section {
+    flex-direction: column;
+  }
+  
+  .metric-item {
+    min-width: 60px;
+  }
+
+  .stacks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stack-actions {
+    flex-direction: column;
+  }
+}
