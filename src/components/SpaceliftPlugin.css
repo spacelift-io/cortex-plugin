@@ -1,7 +1,8 @@
 .spacelift-plugin {
-  padding: 16px;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 0 !important;
+  width: 100%;
+  background-color: hsl(var(--background, 0 0% 100%));
+  min-height: 100vh;
 }
 
 .plugin-header {
@@ -9,19 +10,19 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px !important;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .stack-title {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
 }
 
 .stack-description {
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   margin: 0 16px 16px 16px;
   line-height: 1.5;
 }
@@ -32,7 +33,7 @@
   gap: 24px;
   margin: 16px;
   padding: 16px;
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 6px;
 }
 
@@ -44,7 +45,7 @@
 
 .info-label {
   font-size: 12px;
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   font-weight: 500;
   margin-bottom: 4px;
   text-transform: uppercase;
@@ -53,17 +54,18 @@
 
 .info-value {
   font-size: 14px;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
   font-weight: 500;
 }
 
 .metrics-section {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 24px;
-  margin: 16px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
+  margin: 8px 16px 16px 16px !important;
+  padding: 12px 16px !important;
+  border: 1px solid var(--color-gray-200);
   border-radius: 6px;
 }
 
@@ -76,7 +78,7 @@
 
 .metric-label {
   font-size: 11px;
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   font-weight: 500;
   margin-bottom: 8px;
   text-align: center;
@@ -87,11 +89,11 @@
 .metric-value {
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
 }
 
 .metric-value.success {
-  color: #059669;
+  color: var(--color-green-600);
 }
 
 .badges-section, .labels-section {
@@ -106,19 +108,19 @@
   gap: 12px;
   margin: 16px;
   padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 }
 
 /* Stacks Grid */
 .stacks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
   margin-top: 16px;
 }
 
 .stack-card {
-  padding: 16px;
+  padding: 16px !important;
 }
 
 .stack-header {
@@ -127,22 +129,30 @@
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .stack-name {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
+}
+
+.stack-health {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .stack-info {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 16px;
-  margin-bottom: 12px;
-  padding: 8px 0;
+  margin-bottom: 12px !important;
+  padding: 8px 0 !important;
   font-size: 12px;
 }
 
@@ -151,15 +161,15 @@
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-  background: #f3f4f6;
+  background: var(--color-gray-50);
   padding: 4px 8px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .detail-label {
   font-size: 12px;
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   font-weight: 500;
   min-width: fit-content;
   white-space: nowrap;
@@ -171,16 +181,16 @@
 
 .detail-value {
   font-size: 12px;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
   font-weight: 500;
 }
 
 .stack-metrics {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 12px;
-  padding: 12px;
-  border: 1px solid #e5e7eb;
+  margin-bottom: 12px !important;
+  padding: 12px !important;
+  border: 1px solid var(--color-gray-200);
   border-radius: 4px;
 }
 
@@ -194,24 +204,32 @@
 .metric-number {
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.95);
   margin-bottom: 2px;
 }
 
 .metric-number.success {
-  color: #059669;
+  color: var(--color-green-600);
+}
+
+.metric-number.error {
+  color: var(--color-red-600);
+}
+
+.metric-number.warning {
+  color: var(--color-amber-500);
 }
 
 .stack-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 12px !important;
 }
 
 .status-label {
   font-size: 12px;
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   font-weight: 500;
 }
 
@@ -231,17 +249,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-bottom: 12px;
+  margin-bottom: 12px !important;
 }
 
 /* Stack Labels */
 .stack-labels {
-  margin-bottom: 12px;
+  margin-bottom: 12px !important;
 }
 
 .labels-title {
   font-size: 12px;
-  color: #6b7280;
+  color: hsl(var(--text-neutral, 0 0% 7%) / 0.6);
   font-weight: 500;
   display: block;
   margin-bottom: 4px;
@@ -251,6 +269,109 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+/* State-specific styling for stack health indicators */
+.stack-health-excellent {
+  color: var(--color-green-600);
+}
+
+.stack-health-good {
+  color: var(--color-green-500);
+}
+
+.stack-health-warning {
+  color: var(--color-amber-500);
+}
+
+.stack-health-error {
+  color: var(--color-red-600);
+}
+
+.stack-health-critical {
+  color: var(--color-red-700);
+}
+
+/* Run state specific colors */
+.run-state-finished {
+  color: var(--color-green-600);
+}
+
+.run-state-failed {
+  color: var(--color-red-600);
+}
+
+.run-state-queued,
+.run-state-preparing,
+.run-state-planning,
+.run-state-applying {
+  color: var(--color-amber-500);
+}
+
+.run-state-cancelled,
+.run-state-discarded {
+  color: var(--color-gray-500);
+}
+
+/* Stack state specific colors */
+.stack-state-ready {
+  color: var(--color-green-600);
+}
+
+.stack-state-preparing {
+  color: var(--color-amber-500);
+}
+
+.stack-state-discarded {
+  color: var(--color-gray-500);
+}
+
+.stack-state-deleting {
+  color: var(--color-red-600);
+}
+
+/* Success rate color coding */
+.success-rate-high {
+  color: var(--color-green-600);
+}
+
+.success-rate-medium {
+  color: var(--color-amber-500);
+}
+
+.success-rate-low {
+  color: var(--color-red-600);
+}
+
+/* Stack state badge color overrides using custom classes */
+.stack-state-badge.stack-state-ready {
+  background-color: var(--color-green-600) !important;
+  color: white !important;
+  border-color: var(--color-green-600) !important;
+}
+
+.stack-state-badge.stack-state-failed {
+  background-color: var(--color-red-600) !important;
+  color: white !important;
+  border-color: var(--color-red-600) !important;
+}
+
+.stack-state-badge.stack-state-preparing {
+  background-color: var(--color-amber-500) !important;
+  color: white !important;
+  border-color: var(--color-amber-500) !important;
+}
+
+.stack-state-badge.stack-state-discarded {
+  background-color: var(--color-gray-500) !important;
+  color: white !important;
+  border-color: var(--color-gray-500) !important;
+}
+
+.stack-state-badge.stack-state-deleting {
+  background-color: var(--color-red-600) !important;
+  color: white !important;
+  border-color: var(--color-red-600) !important;
 }
 
 /* Mobile responsive */

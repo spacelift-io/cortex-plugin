@@ -1,45 +1,54 @@
-import { CortexApi } from '@cortexapps/plugin-core';
-import { SpaceliftLocalService } from './spaceliftLocalService';
 import { SpaceStack, StackMetrics } from '../types/spacelift';
+import { CortexApi } from '@cortexapps/plugin-core';
 
 interface SpacePluginConfig {
   spaceliftEndpoint: string;
-  apiKeyId: string;
-  apiKeySecret: string;
+  apiToken: string;
 }
 
 export class SpaceliftService {
   private config: SpacePluginConfig | null = null;
-  private isProduction: boolean;
-  private localService: SpaceliftLocalService | null = null;
-
-  constructor() {
-    // Detect environment
-    this.isProduction = !(
-      window.location.hostname === 'localhost' || 
-      window.location.hostname === '127.0.0.1'
-    );
-  }
 
   initialize(config: SpacePluginConfig) {
     this.config = config;
-    
-    if (!this.isProduction) {
-      // Initialize local service for development
-      this.localService = new SpaceliftLocalService(config);
+  }
+
+  private jwtToken: string | null = null;
+  
+  private async getJwtToken(): Promise<string> {
+    if (this.jwtToken) {
+      return this.jwtToken;
     }
+
+    if (!this.config?.apiToken) {
+      throw new Error('Spacelift JWT token not configured. Please check your authentication setup.');
+    }
+
+    // Use the JWT token from Lambda
+    this.jwtToken = this.config.apiToken;
+    return this.jwtToken;
   }
 
   private async makeGraphQLRequest(query: string, variables?: any): Promise<any> {
-    // This method is now only used in production mode
-    // Development uses the localService instead
-    const response = await CortexApi.proxyFetch('/api/spacelift/graphql', {
+    // Get JWT token first
+    const token = await this.getJwtToken();
+    
+    // Use CortexApi.proxyFetch for all GraphQL requests to avoid CORS issues
+    const response = await CortexApi.proxyFetch(`${this.config.spaceliftEndpoint}/graphql`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ query, variables: variables || {} }),
     });
     
     if (!response.ok) {
+      // If token expired, clear it and retry once
+      if (response.status === 401 && this.jwtToken) {
+        this.jwtToken = null;
+        return this.makeGraphQLRequest(query, variables);
+      }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
@@ -47,45 +56,27 @@ export class SpaceliftService {
   }
 
   async getAllStacks(): Promise<SpaceStack[]> {
-    if (!this.isProduction && this.localService) {
-      // Development: use local service with direct API calls
-      return this.localService.getAllStacks();
-    }
-
-    // Production: use Cortex backend proxy
+    // Use correct Spacelift API query structure
     const query = `
-      query GetAllStacks($first: Int!) {
-        stacks(first: $first) {
-          edges {
-            node {
-              id
-              name
-              description
-              state
-              administrative
-              autodeploy
-              autoretry
-              repository
-              branch
-              provider
-              space {
-                id
-              }
-              labels
-              entities {
-                id
-                name
-                type
-              }
-            }
-          }
+      query GetAllStacks {
+        stacks {
+          id
+          name
+          description
+          state
+          autodeploy
+          autoretry
+          repository
+          branch
+          space
+          labels
         }
       }
     `;
 
     try {
-      const result = await this.makeGraphQLRequest(query, { first: 100 });
-      return result.data.stacks.edges.map((edge: any) => edge.node);
+      const result = await this.makeGraphQLRequest(query);
+      return result.data.stacks;
     } catch (error) {
       console.error('Error fetching all stacks:', error);
       throw error;
@@ -93,22 +84,15 @@ export class SpaceliftService {
   }
 
   async getStackMetrics(stackId: string): Promise<StackMetrics> {
-    if (!this.isProduction && this.localService) {
-      // Development: use local service with direct API calls
-      return this.localService.getStackMetrics(stackId);
-    }
-
-    // Production: use Cortex backend proxy
-    const runsQuery = `
-      query GetStackRuns($stack: ID!) {
-        stack(id: $stack) {
+    const query = `
+      query GetStackMetrics($stackId: ID!) {
+        stack(id: $stackId) {
           runs {
             id
             state
-            type
             createdAt
             updatedAt
-            title
+            finished
             triggeredBy
             commit {
               hash
@@ -119,7 +103,6 @@ export class SpaceliftService {
           }
           entities {
             id
-            name
             type
           }
         }
@@ -127,27 +110,16 @@ export class SpaceliftService {
     `;
 
     try {
-      const result = await this.makeGraphQLRequest(runsQuery, { stack: stackId });
-      const runs = (result.data.stack.runs || []).slice(0, 50);
+      const result = await this.makeGraphQLRequest(query, { stackId });
+      
+      if (!result.data.stack) {
+        throw new Error(`Stack ${stackId} not found`);
+      }
+
+      const runs = result.data.stack.runs || [];
       const entities = result.data.stack.entities || [];
 
-      const totalRuns = runs.length;
-      const successfulRuns = runs.filter((run: any) => run.state === 'FINISHED').length;
-      const failedRuns = runs.filter((run: any) => run.state === 'FAILED').length;
-      const lastRun = runs[0];
-
-      // Count resources from stack entities
-      const resourceCount = entities.length;
-
-      return {
-        totalRuns,
-        successfulRuns,
-        failedRuns,
-        lastRunState: lastRun?.state || 'UNKNOWN',
-        lastRunTime: lastRun?.updatedAt,
-        driftDetected: false, // Would need additional query for drift detection
-        resourceCount,
-      };
+      return this.calculateStackMetrics(null, runs, entities);
     } catch (error) {
       console.error('Error fetching stack metrics:', error);
       throw error;
@@ -155,12 +127,7 @@ export class SpaceliftService {
   }
 
   async triggerRun(stackId: string, message?: string): Promise<string | null> {
-    if (!this.isProduction && this.localService) {
-      // Development: use local service with direct API calls
-      return this.localService.triggerRun(stackId, message);
-    }
-
-    // Production: use Cortex backend proxy
+    // Use direct GraphQL API calls with JWT token
     const mutation = `
       mutation TriggerRun($stack: ID!) {
         runTrigger(stack: $stack) {
@@ -182,10 +149,15 @@ export class SpaceliftService {
 
   // Helper method to calculate metrics from stack data
   private calculateStackMetrics(stack: any, runs: any[], entities: any[]): StackMetrics {
-    const totalRuns = runs.length;
-    const successfulRuns = runs.filter((run: any) => run.state === 'FINISHED').length;
-    const failedRuns = runs.filter((run: any) => run.state === 'FAILED').length;
-    const lastRun = runs[0];
+    // Sort runs by creation time (most recent first)
+    const sortedRuns = runs.sort((a: any, b: any) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    const totalRuns = sortedRuns.length;
+    const successfulRuns = sortedRuns.filter((run: any) => run.state === 'FINISHED').length;
+    const failedRuns = sortedRuns.filter((run: any) => run.state === 'FAILED').length;
+    const lastRun = sortedRuns[0];
     const resourceCount = entities.length;
 
     return {
@@ -200,74 +172,44 @@ export class SpaceliftService {
     };
   }
 
-  // Optimized method to get all stacks with metrics in a single query
+  // Method to get all stacks with metrics - fetches real metrics for each stack
   async getAllStacksWithMetrics(): Promise<{ stacks: SpaceStack[], metrics: Record<string, StackMetrics> }> {
-    if (!this.isProduction && this.localService) {
-      // Development: use local service with direct API calls
-      return this.localService.getAllStacksWithMetrics();
-    }
-
-    // Production: use Cortex backend proxy - get all data in one query
-    const query = `
-      query GetAllStacksWithMetrics($first: Int!) {
-        stacks(first: $first) {
-          edges {
-            node {
-              id
-              name
-              description
-              state
-              administrative
-              autodeploy
-              autoretry
-              repository
-              branch
-              provider
-              space {
-                id
-              }
-              labels
-              entities {
-                id
-                name
-                type
-              }
-              runs {
-                id
-                state
-                type
-                createdAt
-                updatedAt
-                title
-                triggeredBy
-                commit {
-                  hash
-                  message
-                  authorName
-                  timestamp
-                }
-              }
-            }
+    // First get all stacks
+    const stacks = await this.getAllStacks();
+    
+    // Fetch metrics for each stack in parallel
+    const metricsPromises = stacks.map(async (stack: any) => {
+      try {
+        const metrics = await this.getStackMetrics(stack.id);
+        return { stackId: stack.id, metrics };
+      } catch (error) {
+        console.error(`Error fetching metrics for stack ${stack.id}:`, error);
+        // Return empty metrics for failed stacks so the UI still works
+        return {
+          stackId: stack.id,
+          metrics: {
+            totalRuns: 0,
+            successfulRuns: 0,
+            failedRuns: 0,
+            lastRunState: 'UNKNOWN',
+            lastRunTime: undefined,
+            lastTriggeredBy: undefined,
+            driftDetected: false,
+            resourceCount: 0,
           }
-        }
+        };
       }
-    `;
+    });
 
-    try {
-      const result = await this.makeGraphQLRequest(query, { first: 100 });
-      const stacks = result.data.stacks.edges.map((edge: any) => edge.node);
-      const metrics: Record<string, StackMetrics> = {};
-      
-      stacks.forEach((stack: any) => {
-        const runs = (stack.runs || []).slice(0, 50);
-        const entities = stack.entities || [];
-        metrics[stack.id] = this.calculateStackMetrics(stack, runs, entities);
-      });
+    // Wait for all metrics to be fetched
+    const metricsResults = await Promise.all(metricsPromises);
+    
+    // Convert to metrics map
+    const metrics: Record<string, StackMetrics> = {};
+    metricsResults.forEach(({ stackId, metrics: stackMetrics }) => {
+      metrics[stackId] = stackMetrics;
+    });
 
-      return { stacks, metrics };
-    } catch (error) {
-      console.error('Error fetching all stacks with metrics:', error);
-      throw error;
-    }
+    return { stacks, metrics };
   }
 }

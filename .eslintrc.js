@@ -1,37 +1,30 @@
 module.exports = {
-  root: true,
   env: {
     browser: true,
-    es2020: true,
+    es2021: true,
   },
   extends: [
-    'eslint:recommended',
-    '@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "standard-with-typescript",
+    "prettier",
   ],
-  ignorePatterns: ['dist', '.eslintrc.js'],
-  parser: '@typescript-eslint/parser',
+  overrides: [],
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
+    ecmaVersion: "latest",
+    project: "tsconfig.json",
+    sourceType: "module",
+    tsconfigRootDir: __dirname,
   },
-  plugins: ['react-refresh', '@typescript-eslint'],
+  plugins: ["react"],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-    'react/react-in-jsx-scope': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    // conflicts with no-extra-boolean-cast
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "no-console": ["error", { allow: ["warn", "error"] }],
   },
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
 };

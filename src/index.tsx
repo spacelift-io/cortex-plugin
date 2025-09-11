@@ -1,17 +1,17 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import '@cortexapps/react-plugin-ui/index.css';
-import { SpaceliftPlugin } from './components/SpaceliftPlugin';
+import { createRoot } from "react-dom/client";
+import "@iframe-resizer/child";
+import App from "./components/App";
+import { CortexApi } from "@cortexapps/plugin-core";
 
-const App: React.FC = () => {
-  return <SpaceliftPlugin />;
-};
+import "./baseStyles.css"; // @import "tailwindcss";
+import "@cortexapps/react-plugin-ui/index.css";
 
-// Mount the app
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
+document.addEventListener("DOMContentLoaded", function () {
+  // Subscribe to theme changes
+  CortexApi.pluginInit();
+
+  const container = document.getElementById("cortex-plugin-root");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const root = createRoot(container!);
   root.render(<App />);
-} else {
-  console.error('Root container not found');
-}
+});
