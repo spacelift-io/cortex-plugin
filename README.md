@@ -84,3 +84,6 @@ proxies, so this step cannot be automated via Terraform.
 
 7. Go back to the proxy in cortex (`Plugins` -> `Proxies`), and edit it. Use the above outputs to create URL Prefixs in the proxies config. You can also delete the initial url prefix you created in step 2.
   ![proxy.png](proxy.png)
+8. Save the proxy.
+
+** You are done! You can now use the Spacelift plugin in Cortex. **
