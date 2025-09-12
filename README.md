@@ -83,9 +83,4 @@ proxies, so this step cannot be automated via Terraform.
         ```
 
 7. Go back to the proxy in cortex (`Plugins` -> `Proxies`), and edit it. Use the above outputs to create URL Prefixs in the proxies config. You can also delete the initial url prefix you created in step 2.
-
-### Example Proxy Setup
-
-This is what your proxy should, roughly, look like after you've created it in the UI.
-
-![proxy.png](proxy.png)
+  ![proxy.png](proxy.png)
