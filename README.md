@@ -51,8 +51,13 @@ proxies, so this step cannot be automated via Terraform.
        value = module.cortex_spacelift_plugin.proxy_configuration
      }
      ```
-6. The TF will output something like the following:
-- Note: Do *not* copy the below example, yours will be slightly different from the example.
+6. You will get an output similar to below. This is the configuration you need to use in the proxy you created in step 2.
+   The output will contain two URL prefixes:
+   - One for the API Gateway endpoint created by the terraform module
+   - One for your Spacelift endpoint
+
+   Each URL prefix contains the headers that need to be added to requests to those URLs. You can also see an example of the proxy configuration in the screenshot further down the page.
+   Example output:
   - ```terraform
         {
            "https://h3kmnjudj4.execute-api.us-east-1.amazonaws.com/prod/auth" = {
@@ -86,4 +91,4 @@ proxies, so this step cannot be automated via Terraform.
   ![proxy.png](proxy.png)
 8. Save the proxy.
 
-** You are done! You can now use the Spacelift plugin in Cortex. **
+*You are done! You can now use the Spacelift plugin in Cortex*
