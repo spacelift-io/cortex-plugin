@@ -2,99 +2,82 @@
 
 This Terraform configuration deploys the Spacelift plugin to Cortex using the REST API provider.
 
-## What it does
-
-1. **Builds the plugin** - Runs `npm run build` to create the `ui.html` file
-2. **Creates secrets** - Stores Spacelift API credentials securely in Cortex
-3. **Creates a proxy** - Sets up authentication proxy to inject Spacelift credentials
-4. **Deploys the plugin** - Creates the plugin in Cortex with the built UI
-
 ## Prerequisites
 
 - Terraform or OpenTofu installed
 - Node.js and npm installed
 - Cortex API token with 'Edit plugins' permission
 - Spacelift API credentials (key ID and secret)
-- Lambda function URL for Spacelift authentication
+- AWS Access
+
+This module *will* create an API gateway and lambda function in your AWS account.
+This function *must* be publicly accessible.
+The function of the lambda is to generate a JWT token for Spacelift API authentication.
 
 ## Usage
 
-1. **Copy the example variables file:**
-   ```bash
-   cp terraform.tfvars.example terraform.tfvars
-   ```
+First, you *must* create a Cortex proxy manually to use this plugin. Cortex does not have a public API to create proxies, so this step cannot be automated via Terraform.
+1. In cortex, navigate to `Plugins` -> `Create Proxy` at the top right of the Plugins screen.
+2. Only create a basic proxy pointed to google intially. We will modify it later.
+  - Give it a `name`, e.g. `Spacelift Proxy`
+  - Give it a `path`, e.g. `spacelift` (this will be used as the `proxy_path` in the terraform module later)
+  - *!Important*: It must have initial URL prefixes to create the proxy. Recommend just temporarily adding `https://google.com` as a placeholder. We will delete it later.
+3. Cick `Create Proxy` (the first red box in the screenshot below should be the only thing you've filled out)
+4. Update the `proxy_path` variable in your tf code (example below) to match the path you set in step 2.
+5. Apply the tf code to create the plugin.
+6. The TF will output something like the following, update your proxy (2nd red box in the screenshot below) to have the following URL prefixes:
+   - ```terraform
+     proxy = {
+       "https://h3kmnjudj4.execute-api.us-east-1.amazonaws.com/prod/auth" = {
+         urlHeaders = [
+           {
+             name  = "x-spacelift-endpoint"
+             value = var.spacelift_endpoint
+           },
+           {
+             name  = "x-spacelift-key-id"
+             value = "{{ secrets.${local.key_id_tag} }}"
+           },
+           {
+             name  = "x-spacelift-key-secret"
+             value = "{{ secrets.${local.key_secret_tag} }}"
+           }
+         ]
+       },
+       "https://apollorion.app.spacelift.io" = {
+         urlHeaders = [
+           {
+             name  = "x-from-cortex"
+             value = "true"
+           }
+         ]
+       }
+      }
+      ```
+7. Delete the initial URL prefix you created in step 2 (e.g. `https://google.com`)
 
-2. **Edit terraform.tfvars with your values:**
-   ```hcl
-   cortex_api_token = "your-cortex-api-token"
-   spacelift_auth_lambda_url = "https://your-lambda-url.execute-api.region.amazonaws.com/prod/auth"
-   spacelift_endpoint = "https://yourorg.app.spacelift.io"
-   spacelift_key_id = "your-spacelift-key-id"
-   spacelift_key_secret = "your-spacelift-key-secret"
-   ```
+### Example Proxy Setup
 
-3. **Initialize Terraform:**
-   ```bash
-   terraform init
-   ```
+This is what your proxy should, roughly, look like after you've created it in the UI.
 
-4. **Plan the deployment:**
-   ```bash
-   terraform plan
-   ```
+![proxy.png](proxy.png)
 
-5. **Apply the configuration:**
-   ```bash
-   terraform apply
-   ```
+### Example Module Usage
 
-## Configuration Options
+```terraform
+module "cortex_spacelift_plugin" {
+  source  = "github.com/spacelift-io/cortex-plugin?ref=v1.0.0"
 
-### Plugin Settings
-- `plugin_tag` - Unique identifier for the plugin
-- `plugin_name` - Display name in Cortex
-- `plugin_description` - Description text
-- `plugin_contexts` - Where the plugin appears (default: `["ENTITY"]`)
-- `minimum_role_required` - Minimum role to view plugin (`VIEWER`, `EDITOR`, `ADMIN`)
-- `is_draft` - Whether plugin is generally available
+  cortex_api_token      = "{your_cortex_api_token}"
+  spacelift_endpoint    = "https://{youraccount}.app.spacelift.io"
+  spacelift_key_id      = "{your_spacelift_key_id}"
+  spacelift_key_secret  = "{your_spacelift_key_secret}"
+  proxy_path            = "{your_proxy_path}"
 
-### Cortex Settings  
-- `cortex_api_url` - Cortex API base URL (default: `https://api.getcortex.com`)
-- `cortex_api_token` - API token with 'Edit plugins' permission
-
-### Spacelift Settings
-- `spacelift_auth_lambda_url` - Lambda function URL for authentication
-- `spacelift_endpoint` - Your Spacelift organization URL
-- `spacelift_key_id` - Spacelift API key ID
-- `spacelift_key_secret` - Spacelift API key secret
-
-## How Authentication Works
-
-1. Plugin makes requests using `CortexApi.proxyFetch()`
-2. Requests are routed through the Cortex proxy
-3. Proxy injects Spacelift credentials as headers:
-   - `x-spacelift-endpoint`
-   - `x-spacelift-key-id`
-   - `x-spacelift-key-secret`
-4. Lambda function uses these headers to authenticate with Spacelift
-5. Lambda returns JWT token for direct Spacelift API calls
-
-## Resources Created
-
-- **Secrets**: Spacelift endpoint, key ID, and key secret
-- **Proxy**: Authentication proxy with header injection rules
-- **Plugin**: The UI plugin with associated proxy
-
-## Cleanup
-
-To remove all resources:
-```bash
-terraform destroy
+  aws_region            = "us-east-1"
+  plugin_tag            = "spacelift"
+  plugin_name           = "spacelift"
+  plugin_description    = "Spacelift plugin for Cortex"
+  minimum_role_required = "VIEWER"
+}
 ```
-
-## Troubleshooting
-
-- Ensure your Cortex API token has 'Edit plugins' permission
-- Verify the Lambda function URL is accessible and working
-- Check that Spacelift API credentials are valid
-- Plugin contexts must match where you want the plugin to appear

@@ -1,0 +1,11 @@
+cortex_api_token      = "{your_cortex_api_token}"
+spacelift_endpoint    = "https://{youraccount}.app.spacelift.io"
+spacelift_key_id      = "{your_spacelift_key_id}"
+spacelift_key_secret  = "{your_spacelift_key_secret}"
+proxy_path            = "{your_proxy_path}"
+
+aws_region            = "us-east-1"
+plugin_tag            = "spacelift"
+plugin_name           = "spacelift"
+plugin_description    = "Spacelift plugin for Cortex"
+minimum_role_required = "VIEWER"
