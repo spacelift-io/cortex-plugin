@@ -51,9 +51,7 @@ proxies, so this step cannot be automated via Terraform.
        value = module.cortex_spacelift_plugin.proxy_configuration
      }
      ```
-6. The TF will output something like the following, update your proxy (2nd red box in the screenshot below) to have the
-   following URL prefixes:
-
+6. The TF will output something like the following:
 - Note: Do *not* copy the below example, yours will be slightly different from the example.
   - ```terraform
         {
@@ -84,7 +82,7 @@ proxies, so this step cannot be automated via Terraform.
         }
         ```
 
-7. Delete the initial URL prefix you created in step 2 (e.g. `https://google.com`)
+7. Go back to the proxy in cortex, and edit it. Use the above outputs to create URL Prefixs in the proxies config. You can also delete the initial url prefix you created in step 2.
 
 ### Example Proxy Setup
 
