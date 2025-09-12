@@ -14,7 +14,7 @@ export class SpaceliftService {
   }
 
   private jwtToken: string | null = null;
-  
+
   private async getJwtToken(): Promise<string> {
     if (this.jwtToken) {
       return this.jwtToken;
@@ -32,17 +32,18 @@ export class SpaceliftService {
   private async makeGraphQLRequest(query: string, variables?: any): Promise<any> {
     // Get JWT token first
     const token = await this.getJwtToken();
-    
+
     // Use CortexApi.proxyFetch for all GraphQL requests to avoid CORS issues
+    // @ts-ignore
     const response = await CortexApi.proxyFetch(`${this.config.spaceliftEndpoint}/graphql`, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ query, variables: variables || {} }),
     });
-    
+
     if (!response.ok) {
       // If token expired, clear it and retry once
       if (response.status === 401 && this.jwtToken) {
@@ -51,7 +52,7 @@ export class SpaceliftService {
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     return await response.json();
   }
 
@@ -65,7 +66,7 @@ export class SpaceliftService {
           description
           state
           autodeploy
-          autoretry
+          administrative
           repository
           branch
           space
@@ -111,7 +112,7 @@ export class SpaceliftService {
 
     try {
       const result = await this.makeGraphQLRequest(query, { stackId });
-      
+
       if (!result.data.stack) {
         throw new Error(`Stack ${stackId} not found`);
       }
@@ -119,14 +120,14 @@ export class SpaceliftService {
       const runs = result.data.stack.runs || [];
       const entities = result.data.stack.entities || [];
 
-      return this.calculateStackMetrics(null, runs, entities);
+      return this.calculateStackMetrics(runs, entities);
     } catch (error) {
       console.error('Error fetching stack metrics:', error);
       throw error;
     }
   }
 
-  async triggerRun(stackId: string, message?: string): Promise<string | null> {
+  async triggerRun(stackId: string): Promise<string | null> {
     // Use direct GraphQL API calls with JWT token
     const mutation = `
       mutation TriggerRun($stack: ID!) {
@@ -137,7 +138,7 @@ export class SpaceliftService {
     `;
 
     try {
-      const result = await this.makeGraphQLRequest(mutation, { 
+      const result = await this.makeGraphQLRequest(mutation, {
         stack: stackId
       });
       return result.data.runTrigger.id;
@@ -148,9 +149,9 @@ export class SpaceliftService {
   }
 
   // Helper method to calculate metrics from stack data
-  private calculateStackMetrics(stack: any, runs: any[], entities: any[]): StackMetrics {
+  private calculateStackMetrics(runs: any[], entities: any[]): StackMetrics {
     // Sort runs by creation time (most recent first)
-    const sortedRuns = runs.sort((a: any, b: any) => 
+    const sortedRuns = runs.sort((a: any, b: any) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
@@ -176,7 +177,7 @@ export class SpaceliftService {
   async getAllStacksWithMetrics(): Promise<{ stacks: SpaceStack[], metrics: Record<string, StackMetrics> }> {
     // First get all stacks
     const stacks = await this.getAllStacks();
-    
+
     // Fetch metrics for each stack in parallel
     const metricsPromises = stacks.map(async (stack: any) => {
       try {
@@ -203,7 +204,7 @@ export class SpaceliftService {
 
     // Wait for all metrics to be fetched
     const metricsResults = await Promise.all(metricsPromises);
-    
+
     // Convert to metrics map
     const metrics: Record<string, StackMetrics> = {};
     metricsResults.forEach(({ stackId, metrics: stackMetrics }) => {

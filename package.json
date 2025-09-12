@@ -38,7 +38,6 @@
     "babel-jest": "^29.5.0",
     "clsx": "^2.1.1",
     "css-loader": "^6.7.3",
-    "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.7.0",
     "eslint-config-standard-with-typescript": "^34.0.0",
     "eslint-plugin-import": "^2.25.2",
@@ -76,6 +75,8 @@
     "lint": "run-p formatcheck lintcheck",
     "lintcheck": "yarn eslint src",
     "lintfix": "yarn lintcheck --fix",
-    "test": "jest"
+    "test": "jest",
+    "tf_copy_real": "cp src/components/TF_build_consts.tsx /tmp/TF_build_consts.tsx.bak && cp /tmp/TF_build_consts.tsx.real src/components/TF_build_consts.tsx",
+    "tf_copy_backup": "cp /tmp/TF_build_consts.tsx.bak src/components/TF_build_consts.tsx"
   }
 }

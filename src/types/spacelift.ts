@@ -56,24 +56,3 @@ export interface StackMetrics {
   driftDetected: boolean;
   resourceCount: number;
 }
-
-export interface SpacePluginConfig {
-  spaceliftEndpoint: string;
-  apiKeyId: string;
-  apiKeySecret: string;
-  stackIds?: string[];
-  defaultSpace?: string;
-}
-
-export interface CortexEntity {
-  tag: string;
-  type: 'service' | 'resource' | 'domain';
-  title: string;
-  description?: string;
-  x?: {
-    spacelift?: {
-      stackId?: string;
-      stacks?: string[];
-    };
-  };
-}

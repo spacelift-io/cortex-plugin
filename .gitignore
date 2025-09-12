@@ -31,3 +31,8 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+terraform.tfvars
+terraform.tfstate*
+.terraform.lock.hcl
+*.zip

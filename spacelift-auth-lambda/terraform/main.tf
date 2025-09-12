@@ -38,8 +38,8 @@ variable "api_name" {
 # Create deployment package
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "../src"
-  output_path = "../deployment.zip"
+  source_dir  = "${path.module}/../src"
+  output_path = "${path.module}/../deployment.zip"
 }
 
 # IAM role for Lambda
@@ -70,10 +70,10 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 resource "aws_lambda_function" "spacelift_auth" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = var.function_name
-  role            = aws_iam_role.lambda_role.arn
-  handler         = "lambda_function.lambda_handler"
-  runtime         = "python3.11"
-  timeout         = 30
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "lambda_function.lambda_handler"
+  runtime          = "python3.11"
+  timeout          = 30
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   environment {
@@ -147,8 +147,8 @@ resource "aws_api_gateway_integration" "auth_integration" {
   http_method = aws_api_gateway_method.auth_post.http_method
 
   integration_http_method = "POST"
-  type                   = "AWS_PROXY"
-  uri                    = aws_lambda_function.spacelift_auth.invoke_arn
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.spacelift_auth.invoke_arn
 }
 
 # API Gateway Integration (OPTIONS for CORS)

@@ -112,12 +112,7 @@ module.exports = (env, argv) => ({
     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/ui/]),
     new webpack.DefinePlugin({
       'process.env': {
-        // Only include environment variables we actually need
-        'SPACELIFT_ENDPOINT': JSON.stringify(process.env.SPACELIFT_ENDPOINT), // For dev mode only
-        'SPACELIFT_API_KEY_ID': JSON.stringify(process.env.SPACELIFT_API_KEY_ID), // For dev mode only
-        'SPACELIFT_API_KEY_SECRET': JSON.stringify(process.env.SPACELIFT_API_KEY_SECRET), // For dev mode only
-        'SPACELIFT_AUTH_LAMBDA_URL': JSON.stringify(process.env.SPACELIFT_AUTH_LAMBDA_URL), // For production mode
-        'NODE_ENV': JSON.stringify(process.env.NODE_ENV || (argv.mode === "production" ? "production" : "development")),
+        'SPACELIFT_ENDPOINT': JSON.stringify(process.env.SPACELIFT_ENDPOINT),
       }
     }),
   ],
