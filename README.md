@@ -24,7 +24,7 @@ proxies, so this step cannot be automated via Terraform.
 
 - Give it a `name`, e.g. `Spacelift Proxy`
 - Give it a `path`, e.g. `spacelift` (this will be used as the `proxy_path` in the terraform module later)
-- _!Important_: It must have initial URL prefixes to create the proxy. Recommend just temporarily adding
+- **!Important**: It must have initial URL prefixes to create the proxy. Recommend just temporarily adding
   `https://google.com` as a placeholder. We will delete it later.
 
 3. Cick `Create Proxy` (the first red box in the screenshot below should be the only thing you've filled out)
@@ -91,4 +91,4 @@ proxies, so this step cannot be automated via Terraform.
   ![proxy.png](proxy.png)
 8. Save the proxy.
 
-_You are done! You can now use the Spacelift plugin in Cortex_
+**You are done! You can now use the Spacelift plugin in Cortex**
