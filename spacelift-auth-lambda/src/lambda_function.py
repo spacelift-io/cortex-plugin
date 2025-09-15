@@ -36,7 +36,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 400,
                 'headers': {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Origin': 'https://spacelift.io',
                     'Access-Control-Allow-Headers': 'Content-Type,x-spacelift-key-id,x-spacelift-key-secret,x-spacelift-endpoint'
                 },
                 'body': json.dumps({
@@ -51,7 +51,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin': 'https://spacelift.io',
                 'Access-Control-Allow-Headers': 'Content-Type,x-spacelift-key-id,x-spacelift-key-secret,x-spacelift-endpoint'
             },
             'body': json.dumps({
@@ -67,7 +67,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 500,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin': 'https://spacelift.io',
                 'Access-Control-Allow-Headers': 'Content-Type,x-spacelift-key-id,x-spacelift-key-secret,x-spacelift-endpoint'
             },
             'body': json.dumps({

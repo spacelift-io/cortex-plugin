@@ -126,9 +126,9 @@ resource "aws_api_gateway_method" "auth_post" {
   authorization = "NONE"
 
   request_parameters = {
-    "method.request.header.x-spacelift-key-id"     = false
-    "method.request.header.x-spacelift-key-secret" = false
-    "method.request.header.x-spacelift-endpoint"   = false
+    "method.request.header.x-spacelift-key-id"     = true
+    "method.request.header.x-spacelift-key-secret" = true
+    "method.request.header.x-spacelift-endpoint"   = true
   }
 }
 
@@ -199,7 +199,7 @@ resource "aws_api_gateway_integration_response" "auth_options_integration_respon
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://spacelift.io'"
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,x-spacelift-key-id,x-spacelift-key-secret,x-spacelift-endpoint'"
     "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
   }
